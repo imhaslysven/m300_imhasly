@@ -14,7 +14,7 @@ Inhaltsverzeichnis für LB2.md von Sven Imhasly.
 
 ## Einleitung
 Das Ziel der LB2 ist, ein Dienst mithilfe von Vagrant zu automatisieren. 
-Für diese Aufgabe habe ich mich mit Ricardo Frei zusammengeschlossen. Wir haben uns dazu entschieden den Service "Gitlab" anzuschauen.
+Für diese Aufgabe habe ich mich mit Ricardo Frei zusammengeschlossen. Wir haben uns dazu entschieden den Service `Gitlab` anzuschauen.
 
 Mein Ergebniss ist im Vagrantfile abrufbar. Mithilfe den einzelnen Commits ist ersichtlich wann und was von mir erledigt wurde.
 
@@ -35,7 +35,7 @@ root     | 5iveL!fe
 Bild kommt noch
 
 ### Start
-1. Herunterladen der Dateien und in dem Verzeichnis, welchem das `"Vagranfile"` liegt Punkt 2. ausführen.
+1. Herunterladen der Dateien und in dem Verzeichnis, welchem das `Vagranfile` liegt Punkt 2. ausführen.
 2. `vagrant up`
 3. Auf die Website: [http://localhost:8080](http://localhost:8080) verbinden.
 4. Passwort neu setzten. (Muss 8 Zeichen lang sein!)
@@ -83,7 +83,7 @@ end
 </code></pre>
 
 ### Testing
-> Die Installation mit `vagrant up` hat erfolgreich geklappt. Jetzt kann das Ganze noch mit dem Befehl "vagrant global-status" geprüft werden. Hier sollte die laufende Maschine ersichtlich sein.
+> Die Installation mit `vagrant up` hat erfolgreich geklappt. Jetzt kann das Ganze noch mit dem Befehl `vagrant global-status` geprüft werden. Hier sollte die laufende Maschine ersichtlich sein.
 
 
 
