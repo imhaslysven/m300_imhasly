@@ -33,14 +33,6 @@ root     | 5iveL!fe
 ### Übersicht
 ![Übersicht Service](https://github.com/imhaslysven/m300_imhasly/blob/main/Umgebung_m300.PNG)
 
-### Start
-1. Herunterladen der Dateien und in dem Verzeichnis, welchem das `Vagranfile` liegt Punkt 2. ausführen.
-2. `vagrant up`
-3. Auf die Website: [http://localhost:8080](http://localhost:8080) verbinden.
-4. Passwort neu setzten. (Muss 8 Zeichen lang sein!)
-5. Anmelden mit Username. `root` und zuvor gesetztem Passwort. 
-6. Feel-Free Projekte usw. zu erstellen. 
-
 ## Code
 
 <pre><code>
@@ -82,8 +74,17 @@ end
 
 </code></pre>
 
+
+### Start
+1. Herunterladen der Dateien und in dem Verzeichnis, welchem das `Vagranfile` liegt Punkt 2. ausführen.
+2. `vagrant up`
+3. Auf die Website: [http://localhost:8080](http://localhost:8080) verbinden.
+4. Passwort neu setzten. (Muss 8 Zeichen lang sein!)
+5. Anmelden mit Username. `root` und zuvor gesetztem Passwort. 
+6. Feel-Free Projekte usw. zu erstellen. 
+
 ### Testing
-> Die Installation mit `vagrant up` hat erfolgreich geklappt. Jetzt kann das Ganze noch mit dem Befehl `vagrant global-status` geprüft werden. Hier sollte die laufende Maschine ersichtlich sein.
+> Die Installation mit `vagrant up` hat erfolgreich geklappt. Jetzt kann das Ganze noch mit dem Befehl `vagrant global-status` geprüft werden. Hier sollte die laufende Maschine ersichtlich sein. Über ihre Ihre ID könnte sie in einem nächsten Schritt auch gelöscht werden.
 
 
 
