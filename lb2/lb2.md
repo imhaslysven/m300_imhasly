@@ -31,8 +31,7 @@ root     | 5iveL!fe
 
 
 ### Übersicht
-![Übersicht Service]
-Bild kommt noch
+![Übersicht Service](https://github.com/imhaslysven/m300_imhasly/Umgebung_m300.png)
 
 ### Start
 1. Herunterladen der Dateien und in dem Verzeichnis, welchem das `Vagranfile` liegt Punkt 2. ausführen.
@@ -49,26 +48,25 @@ VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box = "ubuntu/bionic64"
-  config.vm.hostname = "ricardo.git"
+  config.vm.hostname = "gitlab.imhasly"
 
   if Vagrant.has_plugin?("vagrant-vbguest")
     config.vbguest.auto_update = false
   end
 
-  config.vm.network "forwarded_port", guest: 80, host: 8080 
-  config.vm.network "forwarded_port", guest: 22, host: 8022 
+  config.vm.network "forwarded_port", guest: 80, host: 8080
+  config.vm.network "forwarded_port", guest: 22, host: 8022
 
-  config.vm.network "private_network", ip: "192.168.56.45"
+  config.vm.network "private_network", ip: "192.168.0.10"
   config.vm.synced_folder ".", "/vagrant", type: "rsync", rsync__exclude: [".git/"]
 
   config.vm.provider "virtualbox" do |vb|
-    vb.name = "ricardo.local" 
-    vb.memory = "4096" 
-    vb.cpus = "2"
+    vb.name = "Gitlab Imhasly"
+    vb.memory = "4096"
   end
 
-  config.vm.provision "shell", inline: <<-SHELL
-    sudo apt-get update 
+ config.vm.provision "shell", inline: <<-SHELL
+    sudo apt-get update
     sudo apt-get install -y curl openssh-server ca-certificates
     debconf-set-selections <<< "postfix postfix/mailname string $HOSTNAME"
     debconf-set-selections <<< "postfix postfix/main_mailer_type string 'Internet Site'"
@@ -80,6 +78,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     sudo gitlab-ctl reconfigure
   SHELL
 end
+ 
+
 </code></pre>
 
 ### Testing
@@ -88,3 +88,7 @@ end
 
 
 ## Quellenverzeichnis
+
+[How to Install Debian using Vagrant](https://www.regur.net/blog/how-to-install-debian-using-vagrant/)
+[Basic Vagrant Gitlab Server](https://gist.github.com/cjtallman/b526d8c7d8b910ba4fd41eb51cd5405b)
+[Deploy Gitlab via Vagrant](https://www.exoscale.com/syslog/deploy-gitlab-on-ubuntu-12-04-with-vagrant/)
