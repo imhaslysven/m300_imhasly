@@ -84,7 +84,7 @@ end
 6. Feel-Free Projekte usw. zu erstellen. 
 
 ### Testing
-> Die Installation mit `vagrant up` hat erfolgreich geklappt. Jetzt kann das Ganze noch mit dem Befehl `vagrant global-status` geprüft werden. Hier sollte die laufende Maschine ersichtlich sein. Über ihre Ihre ID könnte sie in einem nächsten Schritt auch gelöscht werden.
+> Die Installation mit `vagrant up` hat erfolgreich geklappt. Jetzt kann das Ganze noch mit dem Befehl `vagrant global-status` geprüft werden. Hier sollte die laufende Maschine ersichtlich sein. Über ihre ID könnte sie in einem nächsten Schritt auch gelöscht werden.
 
 
 
