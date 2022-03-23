@@ -31,7 +31,7 @@ root     | 5iveL!fe
 
 
 ### Übersicht
-![Übersicht Service](https://github.com/imhaslysven/m300_imhasly/Umgebung_m300.png)
+![Übersicht Service](https://github.com/imhaslysven/m300_imhasly/blob/main/Umgebung_m300.PNG)
 
 ### Start
 1. Herunterladen der Dateien und in dem Verzeichnis, welchem das `Vagranfile` liegt Punkt 2. ausführen.
@@ -89,6 +89,6 @@ end
 
 ## Quellenverzeichnis
 
-[How to Install Debian using Vagrant](https://www.regur.net/blog/how-to-install-debian-using-vagrant/)
-[Basic Vagrant Gitlab Server](https://gist.github.com/cjtallman/b526d8c7d8b910ba4fd41eb51cd5405b)
-[Deploy Gitlab via Vagrant](https://www.exoscale.com/syslog/deploy-gitlab-on-ubuntu-12-04-with-vagrant/)
+[How to Install Debian using Vagrant](https://www.regur.net/blog/how-to-install-debian-using-vagrant/)</br>
+[Basic Vagrant Gitlab Server](https://gist.github.com/cjtallman/b526d8c7d8b910ba4fd41eb51cd5405b)</br>
+[Deploy Gitlab via Vagrant](https://www.exoscale.com/syslog/deploy-gitlab-on-ubuntu-12-04-with-vagrant/)</br>
