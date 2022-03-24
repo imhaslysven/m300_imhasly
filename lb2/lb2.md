@@ -56,7 +56,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     vb.name = "Gitlab Imhasly"
     vb.memory = "4096"
   end
+</code></pre>
 
+Hier wurde die Basic Vagrant Config für die VM gemacht. Zu dieser gehört Hostname, Guest Addition von VirtualBox deaktivieren, Portforwarding, Networking, Syncs und die Konfig selbst.
+
+<pre><code>
  config.vm.provision "shell", inline: <<-SHELL
     sudo apt-get update
     sudo apt-get install -y curl openssh-server ca-certificates
@@ -70,7 +74,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     sudo gitlab-ctl reconfigure
   SHELL
 end
- 
+
+Hier wurden dann die ersten Commands auf der Maschine in der Shell ausgeführt. Neusten Packete und die einzelne Dienste installiert. Danach folgt schlussendlich die endgültige Git-Konfiguration.
 
 </code></pre>
 
