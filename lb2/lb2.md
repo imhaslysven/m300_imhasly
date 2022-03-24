@@ -75,10 +75,10 @@ Hier wurde die Basic Vagrant Config für die VM gemacht. Zu dieser gehört Hostn
   SHELL
 end
 
-Hier wurden dann die ersten Commands auf der Maschine in der Shell ausgeführt. Neusten Packete und die einzelne Dienste installiert. Danach folgt schlussendlich die endgültige Git-Konfiguration.
 
 </code></pre>
 
+Hier wurden dann die ersten Commands auf der Maschine in der Shell ausgeführt. Neusten Packete und die einzelne Dienste installiert. Danach folgt schlussendlich die endgültige Git-Konfiguration.
 
 ### Start
 1. Herunterladen der Dateien und in dem Verzeichnis, welchem das `Vagranfile` liegt Punkt 2. ausführen.
