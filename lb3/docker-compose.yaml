@@ -1,0 +1,35 @@
+version: '2.3'
+
+services:
+  redis:
+    restart: always
+    image: redis:6.2.6
+    command:
+    - --loglevel warning
+    volumes:
+    - redis-data:/data:Z
+
+  postgresql:
+    restart: always
+    image: sameersbn/postgresql:12-20200524
+    volumes:
+    - postgresql-data:/var/lib/postgresql:Z
+    environment:
+    - DB_USER=gitlab
+    - DB_PASS=password
+    - DB_NAME=lb3_DB
+    - DB_EXTENSION=pg_trgm,btree_gist
+
+  gitlab:
+    restart: always
+    image: sameersbn/gitlab:14.10.2
+    depends_on:
+    - redis
+    - postgresql
+    ports:
+    - "80:80"
+    - "8082:22"
+    volumes:
+    - gitlab-data:/home/git/data:Z
+    environment:
+    - DEBUG=false
