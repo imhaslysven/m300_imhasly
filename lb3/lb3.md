@@ -1,100 +1,154 @@
-# LB2 - Gitlab-Installation automatisieren
+<div id="top"></div>
+
+# LB3 - Gitlab-Installation automatisieren
 
 ## Inhaltsverzeichnis
 
-Inhaltsverzeichnis für LB2.md von Sven Imhasly.
+Inhaltsverzeichnis für LB3.md von Sven Imhasly.
 
 - [Einleitung](#Einleitung)
 - [Service](#Service)
   - [Übersicht](#Übersicht)
 - [Code](#Code)
-	- [Starten](#Start)
-- [Testing](#Testing)
+  - [docker-compose](#docker-compose-file)
+- [Codebeschreibung](#code-beschreibung)
+- [Testing](#testing)
+	- [Starten](#Starten)
 - [Quellenverzeichnis](#Quellenverzeichnis)
 
 ## Einleitung
-Das Ziel der LB2 ist, ein Dienst mithilfe von Vagrant zu automatisieren. 
-Für diese Aufgabe habe ich mich mit Ricardo Frei zusammengeschlossen. Wir haben uns dazu entschieden den Service `Gitlab` anzuschauen.
+Unser Ziel ist es, auf Grundlage von Docker-Compose, einen Serverdienst zu automatisieren. 
 
-Mein Ergebniss ist im Vagrantfile abrufbar. Mithilfe den einzelnen Commits ist ersichtlich wann und was von mir erledigt wurde.
+Dabei waren wir in der Umsetzung frei, man konnte sich mit einem Klassenkameraden zusammenschliessen oder auf eigene Faust begutachten. Ich habe mich hierzu entschlossen, mit meinen Kollegen Ricardo Frei und Marks Zgraggen, miteinander zu funktionieren.
+
+Den Code, welchen ich erstellt habe, ist in meinem Github Repository abgelegt und mit differenzierten logischen commits bestückt.
 
 ## Service
-Unser eigen gehostetes Gitlab soll sich selbstständig installieren und auf dem neusten Stand verfügbar sein.
+Die Services, welche ich automatisiere, sind Gitlab, Watchtower und Bytemark. Ich bin zusammen mit meinem Klassenkameraden, Ricardo Frei, darauf gekommen.
 
-Das Ziel ist es, dass der Service unter folgender URL [http://localhost:8080](http://localhost:8080) erreichbar ist. 
+Wir wollen, dass beim Starten mit vagrant up im Hintergrund ein selbst gehosteter Gitlab-Server installiert wird und unter http://localhost:8080 erreichbar ist. 
 
-Dabei kann man sich mit dem Standarduser root anmelden können. Nicht verwundern, zum Beginn muss das Passwort geändert werden.
+Watchtower ist auf unserem Server zuständig dafür, dass regelmässig geprüft wird, dass die Images up-to-date sind und alles einwandfrei funktioniert.
 
-Username | Password
----------|-----------
-root     | 5iveL!fe 
-
+Der Mail-Container macht es für Gitlab möglich direkt Mails zu versenden. Er erstellt ein SMTP-Host welcher unter dem Hostname: mail erreichbar ist. 
 
 ### Übersicht
-![Übersicht Service](https://github.com/imhaslysven/m300_imhasly/blob/main/Umgebung_m300.PNG)
+![Übersicht Service](https://github.com/ricardofrei/M300_Services/blob/main/lb3/U%CC%88bersicht-Services_M300.png)
+
+<p align="right">(<a href="#top">Zum Start</a>)</p>
 
 ## Code
+### docker-compose-file
+```yaml
+version: '3'
 
-<pre><code>
-VAGRANTFILE_API_VERSION = "2"
+networks:
+  frontend:
 
-Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  config.vm.box = "ubuntu/bionic64"
-  config.vm.hostname = "gitlab.imhasly"
+volumes:
+  vol-gitlab-config:
+  vol-gitlab-logs:
+  vol-gitlab-data:
+```
+  - Docker-Compose Version 
+  - Netzwerk
+  - Volumes 
 
-  if Vagrant.has_plugin?("vagrant-vbguest")
-    config.vbguest.auto_update = false
-  end
+```yaml
+services:
+  watchtower:
+    image: v2tec/watchtower:latest
+    command: --cleanup --schedule "0 0 0 * * *"
+    restart: always
+    networks:
+      - frontend
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
 
-  config.vm.network "forwarded_port", guest: 80, host: 8080
-  config.vm.network "forwarded_port", guest: 22, host: 8022
+  gitlab:
+    image: gitlab/gitlab-ce:latest
+    restart: always
+    hostname: "localhost"
+    ports:
+      - "8082:22"
+      - "80:80"
+    networks:
+      - frontend
+    volumes:
+      - vol-gitlab-config:/etc/gitlab
+      - vol-gitlab-logs:/var/log/gitlab
+      - vol-gitlab-data:/var/opt/gitlab
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'http://localhost'
+        letsencrypt['enable'] = false
+        gitlab_rails['gitlab_email_enabled'] = true
+        gitlab_rails['gitlab_email_display_name'] = 'GitLab'
+        gitlab_rails['smtp_enable'] = true
+        gitlab_rails['smtp_address'] = "mail"
+        gitlab_rails['smtp_port'] = 25
+        gitlab_rails['smtp_tls'] = false
+        gitlab_rails['backup_keep_time'] = 604800
 
-  config.vm.network "private_network", ip: "192.168.0.10"
-  config.vm.synced_folder ".", "/vagrant", type: "rsync", rsync__exclude: [".git/"]
-
-  config.vm.provider "virtualbox" do |vb|
-    vb.name = "Gitlab Imhasly"
-    vb.memory = "4096"
-  end
-</code></pre>
-
-Hier wurde die Basic Vagrant Config für die VM gemacht. Zu dieser gehört Hostname, Guest Addition von VirtualBox deaktivieren, Portforwarding, Networking, Syncs und die Konfig selbst.
-
-<pre><code>
- config.vm.provision "shell", inline: <<-SHELL
-    sudo apt-get update
-    sudo apt-get install -y curl openssh-server ca-certificates
-    debconf-set-selections <<< "postfix postfix/mailname string $HOSTNAME"
-    debconf-set-selections <<< "postfix postfix/main_mailer_type string 'Internet Site'"
-    DEBIAN_FRONTEND=noninteractive sudo apt-get install -y postfix
-    if [ ! -e /vagrant/ubuntu-bionic-gitlab-ce_12.9.3-ce.0_amd64.deb ]; then
-        wget --content-disposition -O /vagrant/ubuntu-bionic-gitlab-ce_12.9.3-ce.0_amd64.deb https://packages.gitlab.com/gitlab/gitlab-ce/packages/ubuntu/bionic/gitlab-ce_12.9.3-ce.0_amd64.deb/download.deb
-    fi
-    sudo dpkg -i /vagrant/ubuntu-bionic-gitlab-ce_12.9.3-ce.0_amd64.deb
-    sudo gitlab-ctl reconfigure
-  SHELL
-end
+  mail:
+    image: bytemark/smtp
+    restart: always
+    networks:
+      - frontend
+  
+  gitlab-runner:
+    image: gitlab/gitlab-runner:alpine
+    restart: always
+    depends_on:
+    - gitlab
+    volumes:
+    - ./config/gitlab-runner:/etc/gitlab-runner
+    - /var/run/docker.sock:/var/run/docker.sock
+```
+  - Services: 
+    - Watchtower
+    - Gitlab
+    - mail
+    - gitlab-runner
 
 
-</code></pre>
 
-Hier wurden dann die ersten Commands auf der Maschine in der Shell ausgeführt. Neusten Packete und die einzelne Dienste installiert. Danach folgt schlussendlich die endgültige Git-Konfiguration.
+## Code-Beschreibung
 
-### Start
-1. Herunterladen der Dateien und in dem Verzeichnis, welchem das `Vagranfile` liegt Punkt 2. ausführen.
-2. `vagrant up`
-3. Auf die Website: [http://localhost:8080](http://localhost:8080) verbinden.
-4. Passwort neu setzten. (Muss 8 Zeichen lang sein!)
-5. Anmelden mit Username. `root` und zuvor gesetztem Passwort. 
-6. Feel-Free Projekte usw. zu erstellen. 
+| Code| Beschreibung|
+| --------------| -----------------|
+| version: '3'  | Version von Docker-Compose |
+| networks: | Ich definiere hier ein Netzwerk `frontend`, damit sich alles Container erreichen können. |
+| volumes: | Ich erstelle hier 3 Volumes, um sie später im Container einzubinden. In diesen Volumes könnnen beispielsweise Configs liegen. |
+| services: | Initialisierung der zu installierenden Services. |
+| image: | Angabe zum Image. Vorzugsweise von [Dockerhub](https://hub.docker.com/) |
+| restart: | Wir haben `always` gesetzt, damit es immer neustartet, sobald der Container einen exit-code hat. |
+| hostname: | Hostname für Container. |
+| ports: | Vagrant-VM:Docker-CT. Also haben wir Port 80 der Vagrant-VM auf den Container gebridged. |
+| networks: | Angabe in welchem Netzwerk sich der Container befindet. |
+| volumes: | Welche Volumes werden unter welchem Pfad im Container gemappt. |
+| environment: | Konfig für Container. |
+| GITLAB_OMNIBUS_CONFIG: | Gitlab-interne Konfigurationen. |
 
-### Testing
-> Die Installation mit `vagrant up` hat erfolgreich geklappt. Jetzt kann das Ganze noch mit dem Befehl `vagrant global-status` geprüft werden. Hier sollte die laufende Maschine ersichtlich sein. Über ihre ID könnte sie in einem nächsten Schritt auch gelöscht werden.
+<p align="right">(<a href="#top">Zum Start</a>)</p>
 
+## Testing
+> Die Installation mit `docker-compose up` wurde auf meinem Windows Laptop durchgetestet. Mit "docker ps -a" kann überprüft werden, ob alles ordnungsgemäss läuft. 
 
+### Starten
+1. Herunterladen der Dateien und in dem Verzeichnis, welchem das `"docker-compose.yaml"` file liegt und Punkt 2. ausführen.
+2. `docker-compose up`
+3. Sobald die Container aufgestartet sind, respektive das CMD Fenster mit der Installation fertig ist, auf die Website: [http://localhost:8080](http://localhost:8080/root) verbinden.
+4. Sie sollten nun auf dem Web-Interface von Gitlab sein. Es sollte Aktivitäten, Projects usw. anzeigen können. 
+5. Im Hintergrund laufen nun auch Watchtower, SMTP und Gitlab-Runner.
+
+<p align="right">(<a href="#top">Zum Start</a>)</p>
 
 ## Quellenverzeichnis
 
-[How to Install Debian using Vagrant](https://www.regur.net/blog/how-to-install-debian-using-vagrant/)</br>
-[Basic Vagrant Gitlab Server](https://gist.github.com/cjtallman/b526d8c7d8b910ba4fd41eb51cd5405b)</br>
-[Deploy Gitlab via Vagrant](https://www.exoscale.com/syslog/deploy-gitlab-on-ubuntu-12-04-with-vagrant/)</br>
+- [Markdownsystax](https://github.com/othneildrew/Best-README-Template/blob/master/README.md) 
+- [Linux-Knowledge](https://wiki.ubuntuusers.de)
+- [Install-Guide](https://github.com/BytemarkHosting/configs-gitlab-docker/blob)
+- [Inspiration](https://github.com/containrrr/watchtower/blob/main/docker-compose.yml)
+
+<p align="right">(<a href="#top">Zum Start</a>)</p>
